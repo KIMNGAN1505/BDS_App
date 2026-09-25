@@ -11,7 +11,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# 1. TẢI / GIẢ LẬP DỮ LIỆU BẤT ĐỘNG SẢN (Sẽ thay bằng CSDL ở các bước sau)
 @st.cache_data
 def load_data():
     np.random.seed(42)
@@ -25,7 +24,6 @@ def load_data():
     }
     df = pd.DataFrame(data)
     
-    # Giả lập tính giá theo diện tích & quận
     district_coeff = {"Quận 1": 120, "Quận 3": 100, "Quận 7": 70, "Quận Bình Thạnh": 85, "Quận Thủ Đức": 50}
     df["price_billion"] = df.apply(
         lambda row: round((row["area_m2"] * district_coeff[row["district"]] + row["num_bedrooms"] * 200 + np.random.normal(0, 500)) / 1000, 2),
@@ -36,7 +34,6 @@ def load_data():
 
 df = load_data()
 
-# 2. HUẤN LUYỆN MÔ HÌNH MACHINE LEARNING CƠ BẢN
 @st.cache_resource
 def train_model(data):
     df_encoded = pd.get_dummies(data[["district", "area_m2", "num_bedrooms"]], drop_first=True)
@@ -76,7 +73,6 @@ with tab1:
                                  labels={"area_m2": "Diện tích (m²)", "price_billion": "Giá (Tỷ VNĐ)"})
         st.plotly_chart(fig_scatter, use_container_width=True)
 
-# TAB 2: BỘ LỌC
 with tab2:
     st.header("Tra cứu Bài đăng")
     col_f1, col_f2 = st.columns(2)
@@ -91,7 +87,6 @@ with tab2:
                       (df["price_billion"] <= selected_price[1])]
     st.dataframe(filtered_df, use_container_width=True)
 
-# TAB 3: DỰ BÁO
 with tab3:
     st.header("Dự báo Giá nhà với Machine Learning")
     with st.form("predict_form"):
